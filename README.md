@@ -14,10 +14,10 @@ practice as I work toward my first SOC L1 role.
 
 ## What's here
 
-- **About** — my background and how I came into security
-- **Skills** — the tools and areas I'm building experience in
-- **Certifications & Learning** — completed Cisco and TryHackMe paths
-- **Blog** — notes, lessons and writeups from my learning journey
+- **About** - my background and how I came into security
+- **Skills** - the tools and areas I'm building experience in
+- **Certifications & Learning** - completed Cisco and TryHackMe paths
+- **Blog** - notes, lessons and writeups from my learning journey
 
 ## Built with
 
