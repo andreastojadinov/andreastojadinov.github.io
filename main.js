@@ -36,5 +36,6 @@ sections.forEach((sec) => observer.observe(sec));
     const address = parts[0] + "@" + parts[1] + "." + parts[2];
  
     link.href = "mailto:" + address;   
-    link.textContent = "Email";        
+    link.textContent = address;       
+    link.title = "Click to email me (or copy the address)";
 })();
