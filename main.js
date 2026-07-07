@@ -25,3 +25,16 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: "-40% 0px -55% 0px" }); 
 
 sections.forEach((sec) => observer.observe(sec));
+
+/*Zastita email-a od botova */
+(function setupEmail() {
+    const link = document.getElementById("email-link");
+    if (!link) return;
+ 
+    
+    const parts = ["andreastojadinov", "gmail", "com"];
+    const address = parts[0] + "@" + parts[1] + "." + parts[2];
+ 
+    link.href = "mailto:" + address;   
+    link.textContent = "Email";        
+})();
