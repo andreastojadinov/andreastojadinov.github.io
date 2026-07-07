@@ -31,11 +31,24 @@ sections.forEach((sec) => observer.observe(sec));
     const link = document.getElementById("email-link");
     if (!link) return;
  
-    
+   
     const parts = ["andreastojadinov", "gmail", "com"];
     const address = parts[0] + "@" + parts[1] + "." + parts[2];
  
     link.href = "mailto:" + address;   
-    link.textContent = address;       
-    link.title = "Click to email me (or copy the address)";
+    link.textContent = address;        
+    link.title = "Click to copy";
+ 
+    // Klik = kopiraj adresu u clipboard + kratka potvrda "Copied!"
+    link.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+            await navigator.clipboard.writeText(address);
+            link.textContent = "Copied!";
+            setTimeout(() => { link.textContent = address; }, 1500);
+        } catch (err) {
+            // ako clipboard nije dostupan, otvori mejl program kao rezervu
+            window.location.href = "mailto:" + address;
+        }
+    });
 })();
