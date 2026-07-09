@@ -3,7 +3,7 @@
 My personal cybersecurity portfolio and blog. Built from scratch with plain
 HTML, CSS and a small amount of JavaScript, and deployed on GitHub Pages.
 
-**Live site:** https://andreastojadinov.github.io
+**Live site:** https://andreastojadinov.com
 
 ## About
 
