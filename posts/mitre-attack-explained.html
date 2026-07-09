@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <title>What is MITRE ATT&amp;CK, and why it matters in a SOC | Andrea Stojadinov</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#skills">Skills</a>
+        <a href="../blog.html" class="active">Blog</a>
+        <a href="../index.html#contact">Contact</a>
+    </nav>
+
+    <article>
+        <h1>What is MITRE ATT&amp;CK, and why it matters in a SOC</h1>
+        <p class="post-date">2026-07</p>
+
+        <p>
+            When I started learning about security operations, one name kept
+            following me around: MITRE ATT&amp;CK. It showed up in almost every
+            room, every writeup, every job description. And honestly? The first
+            time I opened it, I felt a little lost. It looked like an enormous
+            grid packed with technical terms, and I remember thinking there was
+            no way I'd ever hold all of that in my head.
+        </p>
+        <p>
+            I want to write about it here for two reasons. One, because it turned
+            into one of my favourite ways to think about attacks once it finally
+            clicked, and I'd love to save someone else that early overwhelm. And
+            two, because explaining something is how I make sure I actually
+            understand it. So if you're just starting out with SOC topics, come
+            along, we'll take it slowly, from zero.
+        </p>
+
+        <h2>What it actually is</h2>
+        <p>
+            Let's demystify the name first, because it sounds scarier than it is.
+            MITRE ATT&amp;CK stands for Adversarial Tactics, Techniques, and
+            Common Knowledge. MITRE is the US non-profit that maintains it, and
+            the whole thing is free and public. Here's the part I love: it isn't
+            theory someone invented at a desk. It's built from real, observed
+            intrusions. So when you read a technique, you're reading something
+            attackers have genuinely done in the wild.
+        </p>
+        <p>
+            The way I think about it now is as a big, organised reference of
+            attacker behaviour. It gathers all those moves an intruder makes,
+            once they've set their sights on a target, into one place, sorted
+            and labelled so you can actually find your way around them.
+        </p>
+
+        <h2>The part that made it click: tactics vs techniques</h2>
+        <p>
+            If you remember only one thing from this post, make it this: the
+            whole framework rests on two words, tactics and techniques.
+        </p>
+        <p>
+            A tactic is the attacker's goal, the <em>why</em>. Something like
+            "gain initial access" or "steal credentials." A technique is the
+            <em>how</em>, the specific method used to get there. Phishing, for
+            example, is a technique for achieving initial access.
+        </p>
+        <p>
+            The analogy that finally made it stick for me: if the tactic is "get
+            into the building," then the techniques are the different ways to
+            pull it off, picking the lock, stealing a keycard, or slipping in
+            behind an employee. Same goal, different methods.
+        </p>
+        <p>
+            A concrete example: the tactic Initial Access contains the technique
+            Phishing (labelled T1566). Phishing then breaks down further into
+            sub-techniques, like a malicious attachment (T1566.001) versus a
+            malicious link (T1566.002). Those ID numbers might look cold at
+            first, but they're actually a gift: they let the entire security
+            world point to the exact same behaviour without any confusion about
+            what we mean.
+        </p>
+
+        <h2>How I stopped being overwhelmed: the Cyber Kill Chain first</h2>
+        <p>
+            Here's something that genuinely helped me, and it's the reason I'm
+            not going to skip over the Cyber Kill Chain.
+        </p>
+        <p>
+            As I worked through the rooms in order, I met the Cyber Kill Chain
+            <em>before</em> MITRE ATT&amp;CK, and I'm so glad I did. The Kill
+            Chain (created by Lockheed Martin) is an older, higher-level model
+            that lays out an attack in a handful of broad, mostly sequential
+            phases. It's simpler, and that simplicity was exactly what I needed
+            as a beginner.
+        </p>
+        <p>
+            Because ATT&amp;CK really can feel enormous and intimidating when you
+            first see all that detail. The Kill Chain gave me a set of bigger
+            buckets to group everything into, so that when I did move on to
+            ATT&amp;CK, I already had a mental frame to hang the finer details
+            on. If you're feeling swamped, I'd honestly suggest the same path:
+            let the Kill Chain give you the big picture first, then let
+            ATT&amp;CK fill in the rich detail underneath.
+        </p>
+        <p>
+            The two aren't rivals, they're partners. The Kill Chain gives you the
+            broad stages; ATT&amp;CK gives you the granular "here's exactly what
+            the attacker did" underneath each one.
+        </p>
+
+        <h2>The attack lifecycle in ATT&amp;CK</h2>
+        <p>
+            Once I was ready for the detail, this is what it looked like.
+            ATT&amp;CK's Enterprise matrix organises everything into 14 tactics
+            that loosely follow the life of an attack. A gentle walk through
+            them:
+        </p>
+        <p>
+            Reconnaissance and Resource Development (researching and preparing),
+            Initial Access (the first foothold, often phishing), Execution
+            (running malicious code), Persistence (making sure they can get back
+            in), Privilege Escalation (gaining higher permissions), Defense
+            Evasion (dodging detection), Credential Access (stealing usernames
+            and passwords), Discovery (looking around the network), Lateral
+            Movement (spreading to other systems), Collection (gathering the
+            target data), Command and Control (talking to the compromised
+            machine), Exfiltration (getting the data out), and Impact (the final
+            damage, like ransomware encryption).
+        </p>
+        <p>
+            One thing I wish I'd known sooner: real attacks don't march neatly
+            from top to bottom. Attackers skip steps, repeat them, and loop back.
+            These tactics are <em>categories</em> of behaviour, not a checklist
+            to tick off in order.
+        </p>
+
+        <h2>More than one matrix</h2>
+        <p>
+            Small but useful to know: there isn't just one matrix. Enterprise
+            (Windows, Linux, macOS, cloud) is the one you'll live in as a SOC
+            analyst, but there are also Mobile and ICS (industrial control
+            systems) matrices for those worlds.
+        </p>
+
+        <h2>Why it matters in a SOC</h2>
+        <p>
+            This is where it stopped being an abstract framework for me and
+            started being a tool I actually reach for. A few reasons it's
+            everywhere in security operations:
+        </p>
+        <p>
+            It gives everyone a shared language. When an analyst says "this looks
+            like execution via PowerShell, T1059," everyone knows exactly what's
+            meant, no vague hand-waving. That clarity travels across teams,
+            tools, and even different companies.
+        </p>
+        <p>
+            It pushes you toward better detection. Instead of only chasing
+            individual indicators like a bad IP or a file hash (which attackers
+            swap out in seconds), ATT&amp;CK nudges you to detect
+            <em>behaviour</em>, which is much harder for an attacker to disguise.
+        </p>
+        <p>
+            It powers threat intelligence. ATT&amp;CK maps known threat groups
+            and their malware to the specific techniques they use. So if intel
+            says a group targeting your sector loves certain techniques, you can
+            go check whether you'd actually catch them.
+        </p>
+        <p>
+            It reveals your blind spots. With tools like the ATT&amp;CK
+            Navigator, a team can map what they can currently detect versus what
+            they'd completely miss, turning a vague "are we safe?" into a
+            concrete coverage map you can point at.
+        </p>
+        <p>
+            It gives you context mid-incident. When I'm working through a problem
+            and I place what I'm seeing onto the matrix, it helps me understand
+            where in the attack I am, and what the attacker is likely to try
+            next. That lets me look ahead instead of only reacting.
+        </p>
+        <p>
+            And that last point is the honest heart of it for me: I never sat
+            down to memorise ATT&amp;CK, nobody does, and you shouldn't try. But
+            through practice, it quietly became the first place I go when I'm
+            untangling a problem. That shift, from "scary wall of data" to "the
+            tool I open first," happened entirely through use, not memorisation.
+        </p>
+
+        <h2>How to start</h2>
+        <p>
+            So my advice, if you're at the beginning: don't try to swallow it
+            whole. Open the Enterprise matrix on attack.mitre.org and just wander
+            around it. Then, next time you analyse an alert, try to map it: which
+            tactic is this? Which technique? Do that a handful of times and the
+            giant, intimidating grid slowly turns into something familiar, almost
+            friendly.
+        </p>
+
+        <h2>Closing</h2>
+        <p>
+            MITRE ATT&amp;CK took attacks from a vague, anxious cloud in my head
+            and turned them into something structured I can actually reason
+            about, one step at a time. If you're starting out in a SOC, it's one
+            of the highest-value things you can learn early, and the secret is
+            that you don't learn it by memorising it. You learn it by using it,
+            gently and repeatedly, until one day you realise it's become second
+            nature.
+        </p>
+
+        <a class="back-link" href="../blog.html">&larr; back to all posts</a>
+    </article>
+
+    <footer>
+        <p>&copy; 2026 Andrea Stojadinov // built &amp; maintained by me</p>
+    </footer>
+
+</body>
+</html>
