@@ -9,10 +9,10 @@ cybersecurity portfolio, so its own security is part of the work.
 The site is **fully static** (plain HTML, CSS and a small amount of JavaScript),
 hosted on GitHub Pages. There is intentionally:
 
-- **no backend / server-side code** — nothing on a server executes user input
-- **no database** — no SQL injection surface
-- **no authentication** — no login to bypass or brute-force
-- **no contact form** — no user-supplied input is processed anywhere
+- **no backend / server-side code** - nothing on a server executes user input
+- **no database** - no SQL injection surface
+- **no authentication** - no login to bypass or brute-force
+- **no contact form** - no user-supplied input is processed anywhere
 
 This removes entire classes of common web vulnerabilities before they can exist.
 
@@ -21,12 +21,12 @@ This removes entire classes of common web vulnerabilities before they can exist.
 Because GitHub Pages does not allow custom HTTP response headers, the following
 protections are applied via HTML `<meta>` tags, which browsers honour:
 
-- **Content-Security-Policy (CSP)** — restricts which origins may load scripts,
+- **Content-Security-Policy (CSP)** - restricts which origins may load scripts,
   styles and fonts. Scripts are limited to same-origin (`script-src 'self'`),
   with no `'unsafe-inline'`. This is the primary defence against cross-site
   scripting (XSS): even if malicious markup were somehow injected, the browser
   would refuse to execute unauthorised scripts.
-- **Referrer-Policy** (`strict-origin-when-cross-origin`) — limits the referrer
+- **Referrer-Policy** (`strict-origin-when-cross-origin`) - limits the referrer
   information leaked to external sites when a visitor follows an outbound link.
 
 To keep the CSP strict, all JavaScript lives in an external file (`main.js`)
