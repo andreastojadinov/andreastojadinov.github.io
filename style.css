@@ -14,7 +14,7 @@
     box-sizing: border-box;
 }
 
-/* CSS varijable: */
+/* CSS varijable: boju menjas na JEDNOM mestu, vazi svuda */
 :root {
     --bg: #0a0e14;
     --panel: #111926;
@@ -74,11 +74,11 @@ nav {
 nav a {
     color: var(--text);
     text-decoration: none;
-    position: relative;   
+    position: relative;   /* potrebno da bi ::after linija znala gde da stoji */
     padding-bottom: 6px;
 }
 
-/* Neonska linija ispod linka */
+/* Neonska linija ispod linka: postoji stalno, ali je "skupljena" (scaleX(0)) */
 nav a::after {
     content: "";
     position: absolute;
@@ -87,7 +87,7 @@ nav a::after {
     width: 100%;
     height: 2px;
     background: var(--neon);
-    box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); 
+    box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); /* neon sjaj */
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s ease;
@@ -119,7 +119,7 @@ h2 {
     font-size: 1.4rem;
     margin-bottom: 24px;
     padding-left: 14px;
-    border-left: 3px solid var(--neon);  
+    border-left: 3px solid var(--neon);  /* neonska crtica uz naslov */
     text-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
 }
 
@@ -134,7 +134,8 @@ p {
     margin-bottom: 18px;
 }
 
-/* ===== HERO / TERMINAL ===== */
+/* ===== HERO / TERMINAL =====
+   Kutija koja imitira terminal — nas "potpis" na sajtu */
 .terminal {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -145,7 +146,7 @@ p {
 }
 
 .terminal .prompt {
-    color: var(--neon2);   
+    color: var(--neon2);   /* roze prompt kao kontrast */
 }
 
 .terminal .cmd-line {
@@ -168,7 +169,7 @@ p {
     50% { opacity: 0; }
 }
 
-
+/* Ako je korisniku u sistemu ukljuceno "smanji animacije" — postujemo to */
 @media (prefers-reduced-motion: reduce) {
     .cursor { animation: none; }
     html { scroll-behavior: auto; }
@@ -178,7 +179,7 @@ p {
 /* ===== SKILLS kao "cipovi" ===== */
 .chips {
     display: flex;
-    flex-wrap: wrap;   
+    flex-wrap: wrap;   /* prelamaju se u novi red kad nema mesta */
     gap: 12px;
     list-style: none;
     margin: 0;
@@ -314,4 +315,95 @@ footer {
 a:focus-visible {
     outline: 2px solid var(--neon2);
     outline-offset: 3px;
+}
+
+/* ===== KRUZNI PROGRESS INDIKATORI (Certifications) ===== */
+
+.cert-grid {
+    display: flex;
+    flex-wrap: wrap;          /* prelamaju se u novi red na manjim ekranima */
+    gap: 26px 18px;
+    justify-content: flex-start;
+}
+
+/* Jedna kartica (jedan kurs) */
+.cert-ring {
+    position: relative;       /* da procenat moze da stoji centriran preko kruga */
+    width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* SVG krug */
+.cert-ring .ring {
+    width: 110px;
+    height: 110px;
+    transform: rotate(-90deg); /* da punjenje krece od vrha (12h) */
+}
+
+/* Pozadinska (prazna) putanja kruga */
+.ring-track {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 8;
+}
+
+/* Obojena (popunjena) putanja */
+.ring-fill {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 327;     /* obim kruga (2 * pi * 52 ~= 327) */
+    stroke-dashoffset: 327;    /* pocinje "prazan"; main.js ga puni */
+    transition: stroke-dashoffset 1.4s ease;
+}
+
+/* Zavrseni kursevi = neon plava */
+.cert-ring.done .ring-fill {
+    stroke: var(--neon);
+    filter: drop-shadow(0 0 4px var(--neon));
+}
+
+/* Kurs u toku = neon roze */
+.cert-ring.progress .ring-fill {
+    stroke: var(--neon2);
+    filter: drop-shadow(0 0 4px var(--neon2));
+}
+
+/* Procenat, centriran preko kruga */
+.ring-pct {
+    position: absolute;
+    top: 55px;                 /* poravnato sa centrom kruga (110px / 2) */
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #eef4fb;
+}
+
+.cert-ring.done .ring-pct {
+    color: var(--neon);
+}
+
+.cert-ring.progress .ring-pct {
+    color: var(--neon2);
+}
+
+/* Naziv kursa ispod kruga */
+.cert-name {
+    margin-top: 12px;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: var(--text);
+}
+
+/* Postovanje "smanji animacije": bez tranzicije, krug odmah na vrednosti */
+@media (prefers-reduced-motion: reduce) {
+    .ring-fill {
+        transition: none;
+    }
 }
