@@ -1,12 +1,4 @@
-/* ==================================================
-   style.css — Cyberpunk / dark tech tema
-   Paleta:
-     pozadina:   #0a0e14 (skoro crna, plavkasta)
-     paneli:     #111926
-     tekst:      #c9d4e3 (svetlo sivo-plava)
-     neon cyan:  #00e5ff (glavni akcenat)
-     neon pink:  #ff2e88 (sekundarni akcenat)
-   ================================================== */
+/* style.css — site-wide styles */
 
 * {
     margin: 0;
@@ -14,7 +6,6 @@
     box-sizing: border-box;
 }
 
-/* CSS varijable: boju menjas na JEDNOM mestu, vazi svuda */
 :root {
     --bg: #0a0e14;
     --panel: #111926;
@@ -26,13 +17,12 @@
 }
 
 html {
-    scroll-behavior: smooth; /* glatko skrolovanje na klik u navigaciji */
+    scroll-behavior: smooth;
 }
 
 body {
     font-family: "Segoe UI", system-ui, sans-serif;
     background-color: var(--bg);
-    /* suptilan "glow" u pozadini vrha stranice */
     background-image: radial-gradient(ellipse 80% 50% at 50% -10%,
                         rgba(0, 229, 255, 0.08), transparent);
     color: var(--text);
@@ -42,7 +32,6 @@ body {
     padding: 0 20px;
 }
 
-/* Naslovi u "tech" fontu (ucitava se u <head> svake stranice) */
 h1, h2, h3 {
     font-family: "Chakra Petch", "Segoe UI", sans-serif;
     color: #eef4fb;
@@ -61,7 +50,7 @@ a:hover {
     color: #7df3ff;
 }
 
-/* ===== NAVIGACIJA ===== */
+/* Navigation */
 nav {
     display: flex;
     gap: 26px;
@@ -74,11 +63,10 @@ nav {
 nav a {
     color: var(--text);
     text-decoration: none;
-    position: relative;   /* potrebno da bi ::after linija znala gde da stoji */
+    position: relative;
     padding-bottom: 6px;
 }
 
-/* Neonska linija ispod linka: postoji stalno, ali je "skupljena" (scaleX(0)) */
 nav a::after {
     content: "";
     position: absolute;
@@ -87,13 +75,12 @@ nav a::after {
     width: 100%;
     height: 2px;
     background: var(--neon);
-    box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); /* neon sjaj */
+    box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s ease;
 }
 
-/* Na hover i na AKTIVNOJ sekciji linija se "razvuce" */
 nav a:hover::after,
 nav a.active::after {
     transform: scaleX(1);
@@ -103,7 +90,7 @@ nav a.active {
     color: var(--neon);
 }
 
-/* ===== SEKCIJE ===== */
+/* Sections */
 section {
     padding: 60px 0;
     border-bottom: 1px solid var(--border);
@@ -119,12 +106,17 @@ h2 {
     font-size: 1.4rem;
     margin-bottom: 24px;
     padding-left: 14px;
-    border-left: 3px solid var(--neon);  /* neonska crtica uz naslov */
+    border-left: 3px solid var(--neon);
     text-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
 }
 
 p {
     margin-bottom: 16px;
+}
+
+ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
 }
 
 .tagline {
@@ -134,8 +126,7 @@ p {
     margin-bottom: 18px;
 }
 
-/* ===== HERO / TERMINAL =====
-   Kutija koja imitira terminal — nas "potpis" na sajtu */
+/* Hero terminal */
 .terminal {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -146,7 +137,7 @@ p {
 }
 
 .terminal .prompt {
-    color: var(--neon2);   /* roze prompt kao kontrast */
+    color: var(--neon2);
 }
 
 .terminal .cmd-line {
@@ -155,7 +146,6 @@ p {
     font-size: 0.9rem;
 }
 
-/* Trepcuci kursor na kraju komandne linije */
 .cursor {
     display: inline-block;
     width: 9px;
@@ -169,17 +159,10 @@ p {
     50% { opacity: 0; }
 }
 
-/* Ako je korisniku u sistemu ukljuceno "smanji animacije" — postujemo to */
-@media (prefers-reduced-motion: reduce) {
-    .cursor { animation: none; }
-    html { scroll-behavior: auto; }
-    nav a::after { transition: none; }
-}
-
-/* ===== SKILLS kao "cipovi" ===== */
+/* Skills chips */
 .chips {
     display: flex;
-    flex-wrap: wrap;   /* prelamaju se u novi red kad nema mesta */
+    flex-wrap: wrap;
     gap: 12px;
     list-style: none;
     margin: 0;
@@ -200,41 +183,80 @@ p {
     box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
 }
 
-/* ===== CERTIFICATIONS ===== */
-.certs {
-    list-style: none;
-}
-
-.certs li {
-    padding: 12px 0;
-    border-bottom: 1px dashed var(--border);
+/* Certification progress rings */
+.cert-grid {
     display: flex;
-    justify-content: space-between;  /* naziv levo, status desno */
-    gap: 12px;
     flex-wrap: wrap;
+    gap: 24px 22px;
 }
 
-/* Male "etikete" statusa */
-.tag {
+.cert-ring {
+    position: relative;
+    width: 104px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.cert-ring .ring {
+    width: 68px;
+    height: 68px;
+    transform: rotate(-90deg);
+}
+
+.ring-track {
+    fill: none;
+    stroke: rgba(29, 42, 61, 0.6);
+    stroke-width: 5;
+}
+
+.ring-fill {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 327;
+    stroke-dashoffset: 327;
+    transition: stroke-dashoffset 1.4s ease;
+}
+
+.cert-ring.done .ring-fill {
+    stroke: var(--neon);
+    filter: drop-shadow(0 0 3px var(--neon));
+}
+
+.cert-ring.progress .ring-fill {
+    stroke: var(--neon2);
+    filter: drop-shadow(0 0 3px var(--neon2));
+}
+
+.ring-pct {
+    position: absolute;
+    top: 34px;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
     font-family: "JetBrains Mono", monospace;
     font-size: 0.72rem;
-    padding: 2px 10px;
-    border-radius: 20px;
-    align-self: center;
-    white-space: nowrap;
+    font-weight: 500;
 }
 
-.tag.done {
+.cert-ring.done .ring-pct {
     color: var(--neon);
-    border: 1px solid var(--neon);
 }
 
-.tag.progress {
+.cert-ring.progress .ring-pct {
     color: var(--neon2);
-    border: 1px solid var(--neon2);
 }
 
-/* ===== CONTACT dugmad ===== */
+.cert-name {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    color: var(--text);
+}
+
+/* Contact buttons */
 .contact-links {
     display: flex;
     gap: 16px;
@@ -257,7 +279,7 @@ p {
     background: rgba(0, 229, 255, 0.08);
 }
 
-/* ===== BLOG ===== */
+/* Blog */
 .post-preview {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -302,7 +324,7 @@ article h2 {
     font-family: "JetBrains Mono", monospace;
 }
 
-/* ===== FOOTER ===== */
+/* Footer */
 footer {
     padding: 34px 0;
     font-family: "JetBrains Mono", monospace;
@@ -311,99 +333,15 @@ footer {
     text-align: center;
 }
 
-/* Vidljiv fokus za navigaciju tastaturom (pristupacnost) */
 a:focus-visible {
     outline: 2px solid var(--neon2);
     outline-offset: 3px;
 }
 
-/* ===== KRUZNI PROGRESS INDIKATORI (Certifications) ===== */
-
-.cert-grid {
-    display: flex;
-    flex-wrap: wrap;          /* prelamaju se u novi red na manjim ekranima */
-    gap: 26px 18px;
-    justify-content: flex-start;
-}
-
-/* Jedna kartica (jedan kurs) */
-.cert-ring {
-    position: relative;       /* da procenat moze da stoji centriran preko kruga */
-    width: 130px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-/* SVG krug */
-.cert-ring .ring {
-    width: 110px;
-    height: 110px;
-    transform: rotate(-90deg); /* da punjenje krece od vrha (12h) */
-}
-
-/* Pozadinska (prazna) putanja kruga */
-.ring-track {
-    fill: none;
-    stroke: var(--border);
-    stroke-width: 8;
-}
-
-/* Obojena (popunjena) putanja */
-.ring-fill {
-    fill: none;
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-dasharray: 327;     /* obim kruga (2 * pi * 52 ~= 327) */
-    stroke-dashoffset: 327;    /* pocinje "prazan"; main.js ga puni */
-    transition: stroke-dashoffset 1.4s ease;
-}
-
-/* Zavrseni kursevi = neon plava */
-.cert-ring.done .ring-fill {
-    stroke: var(--neon);
-    filter: drop-shadow(0 0 4px var(--neon));
-}
-
-/* Kurs u toku = neon roze */
-.cert-ring.progress .ring-fill {
-    stroke: var(--neon2);
-    filter: drop-shadow(0 0 4px var(--neon2));
-}
-
-/* Procenat, centriran preko kruga */
-.ring-pct {
-    position: absolute;
-    top: 55px;                 /* poravnato sa centrom kruga (110px / 2) */
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    font-family: "JetBrains Mono", monospace;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #eef4fb;
-}
-
-.cert-ring.done .ring-pct {
-    color: var(--neon);
-}
-
-.cert-ring.progress .ring-pct {
-    color: var(--neon2);
-}
-
-/* Naziv kursa ispod kruga */
-.cert-name {
-    margin-top: 12px;
-    font-size: 0.82rem;
-    line-height: 1.35;
-    color: var(--text);
-}
-
-/* Postovanje "smanji animacije": bez tranzicije, krug odmah na vrednosti */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-    .ring-fill {
-        transition: none;
-    }
+    .cursor { animation: none; }
+    html { scroll-behavior: auto; }
+    nav a::after { transition: none; }
+    .ring-fill { transition: none; }
 }
