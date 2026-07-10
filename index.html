@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- ===== SIGURNOSNI META TAGOVI ===== -->
+    <!-- ===== SIGURNOSNI META TAGOVI =====
+         Content-Security-Policy: browseru kaze sa KOJIH domena sme
+         da ucita skripte, stilove i fontove. Sve ostalo se blokira.
+         Ovo je glavna odbrana od XSS-a (ubacivanja tudjeg koda). -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
-    
+    <!-- Referrer-Policy: ogranicava koje info o nasem sajtu se salju
+         drugim sajtovima kad posetilac klikne eksterni link. -->
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
     <title>Andrea Stojadinov | Aspiring SOC Analyst</title>
 
-    
+    <!-- Google Fonts: Chakra Petch (naslovi) i JetBrains Mono (tech detalji) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -35,7 +39,7 @@
             <h1>Andrea Stojadinov</h1>
             <p class="tagline">Aspiring SOC Analyst // Blue Team // Security Studies Graduate</p>
             <p>
-                I monitor, investigate and learn. Building my skills in security
+                I monitor, investigate and learn — building my skills in security
                 operations and writing about the journey along the way.
             </p>
         </div>
@@ -49,7 +53,7 @@
             transitioning into cybersecurity with a focus on blue team work:
             security monitoring, detection and incident response. My academic
             background in risk assessment, information security fundamentals
-            and critical infrastructure protection gave me the theory and
+            and critical infrastructure protection gave me the theory — and
             hands-on training through TryHackMe and Cisco Networking Academy
             is turning it into practice.
         </p>
@@ -67,7 +71,7 @@
         </p>
     </section>
 
-    <!-- ===== SKILLS:  ===== -->
+    <!-- ===== SKILLS: "cipovi" ===== -->
     <section id="skills">
         <h2>Skills</h2>
         <ul class="chips">
@@ -87,14 +91,70 @@
     <!-- ===== CERTIFICATIONS ===== -->
     <section id="certifications">
         <h2>Certifications &amp; Learning</h2>
-        <ul class="certs">
-            <li>Cisco Networking Academy - Networking Basics <span class="tag done">completed</span></li>
-            <li>Cisco Networking Academy - Introduction to Cybersecurity <span class="tag done">completed</span></li>
-            <li>TryHackMe - Pre-Security path <span class="tag done">completed</span></li>
-            <li>TryHackMe - Security 101 path <span class="tag done">completed</span></li>
-            <li>TryHackMe - SOC Level 1 path <span class="tag done">completed</span></li>
-            <li>TryHackMe - AI Security path <span class="tag progress">in progress</span></li>
-        </ul>
+
+        <!-- ===== KRUZNI PROGRESS INDIKATORI =====
+             Svaka kartica ima data-percent = procenat zavrsenosti.
+             Klasa "done" = neon plava, "progress" = neon roze.
+             main.js animira punjenje kruga kad sekcija udje u ekran.
+             Da promenis procenat AI Security-ja: izmeni data-percent
+             dole (npr. data-percent="60") — krug i broj se sami azuriraju. -->
+        <div class="cert-grid">
+
+            <div class="cert-ring done" data-percent="100">
+                <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                    <circle class="ring-fill" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <span class="ring-pct">100%</span>
+                <span class="cert-name">Cisco: Networking Basics</span>
+            </div>
+
+            <div class="cert-ring done" data-percent="100">
+                <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                    <circle class="ring-fill" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <span class="ring-pct">100%</span>
+                <span class="cert-name">Cisco: Intro to Cybersecurity</span>
+            </div>
+
+            <div class="cert-ring done" data-percent="100">
+                <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                    <circle class="ring-fill" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <span class="ring-pct">100%</span>
+                <span class="cert-name">TryHackMe: Pre-Security</span>
+            </div>
+
+            <div class="cert-ring done" data-percent="100">
+                <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                    <circle class="ring-fill" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <span class="ring-pct">100%</span>
+                <span class="cert-name">TryHackMe: Security 101</span>
+            </div>
+
+            <div class="cert-ring done" data-percent="100">
+                <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                    <circle class="ring-fill" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <span class="ring-pct">100%</span>
+                <span class="cert-name">TryHackMe: SOC Level 1</span>
+            </div>
+
+            <div class="cert-ring progress" data-percent="45">
+                <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                    <circle class="ring-fill" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <span class="ring-pct">45%</span>
+                <span class="cert-name">TryHackMe: AI Security</span>
+            </div>
+
+        </div>
         <p>
             <a href="https://tryhackme.com/p/AndreaStojadinov" target="_blank" rel="noopener noreferrer">My TryHackMe profile &rarr;</a>
         </p>
@@ -107,17 +167,18 @@
         <ul class="contact-links">
             <li><a href="https://www.linkedin.com/in/andrea-stojadinov-2642943a7/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
             <li><a href="https://github.com/andreastojadinov" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <!-- Email adresa se NE pise ovde. main.js je sklapa u browseru,
+                 da je spam botovi ne pokupe iz sirovog HTML-a. -->
             <li><a id="email-link">Email</a></li>
-           
         </ul>
-        
+        <!-- Email namerno jos NE stavljamo — resicemo ga sa zastitom od spam botova -->
     </section>
 
     <footer>
         <p>&copy; 2026 Andrea Stojadinov // built &amp; maintained by me</p>
     </footer>
 
-    
+    <!-- Scroll-spy je sada u zasebnom fajlu (zbog stroge CSP politike) -->
     <script src="main.js"></script>
 
 </body>
