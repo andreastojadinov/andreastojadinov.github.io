@@ -44,6 +44,7 @@ hosting can enforce — is documented in [SECURITY.md](SECURITY.md).
 ├── index.html      # main page: about, skills, certifications, contact
 ├── blog.html       # blog index
 ├── posts/          # individual blog posts
+├── images/         # images used in blog posts
 ├── style.css       # site-wide styles (cyberpunk / dark theme)
 ├── main.js         # scroll-spy navigation
 └── SECURITY.md     # security decisions & posture
