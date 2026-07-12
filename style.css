@@ -345,3 +345,22 @@ a:focus-visible {
     nav a::after { transition: none; }
     .ring-fill { transition: none; }
 }
+
+/* Article images and inline code */
+article img {
+    max-width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 6px 0 22px;
+}
+
+article code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.86em;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: var(--neon);
+    overflow-wrap: anywhere;
+}
