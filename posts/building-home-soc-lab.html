@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <title>Building my first home SOC lab with Splunk and Sysmon | Andrea Stojadinov</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#skills">Skills</a>
+        <a href="../blog.html" class="active">Blog</a>
+        <a href="../index.html#contact">Contact</a>
+    </nav>
+
+    <article>
+        <h1>Building my first home SOC lab with Splunk and Sysmon</h1>
+        <p class="post-date">2026-07</p>
+
+        <p>
+            TryHackMe has been great to me. But after a while I noticed
+            something: every room hands you a ready-made lab. The logs are
+            already flowing, the tools are already connected, and my job is
+            just to analyse. I kept wondering: how is all of this actually
+            wired together? If something broke, would I know how to fix it?
+            Could I set this up myself, from nothing?
+        </p>
+        <p>
+            So I decided to find out, and built my own small SOC lab at home.
+            This post documents what I built, what went wrong along the way (a
+            few things did), and the search query that taught me the most. Fair
+            warning: I'm writing this after finishing the build, so consider it
+            a look back rather than a step-by-step tutorial. Honestly, that
+            might be for the best, because now I know which parts actually
+            mattered.
+        </p>
+
+        <h2>The goal</h2>
+        <p>
+            Simple on paper: one Windows machine generating detailed logs, one
+            Splunk instance collecting them, and a dashboard where I can see
+            what's happening. In other words, a miniature version of what a
+            real SOC works with every day, small enough to run on my own
+            computer, real enough that nothing is pre-chewed for me.
+        </p>
+
+        <h2>The architecture</h2>
+        <p>
+            The lab has two halves:
+        </p>
+        <p>
+            The host machine runs Splunk Enterprise (the free licence), acting
+            as the indexer. This is the "SOC side": it receives, stores and
+            lets me search all the logs.
+        </p>
+        <p>
+            A Windows 11 virtual machine plays the endpoint, the "employee
+            workstation" being monitored. On it I installed two things: Sysmon,
+            which produces rich, security-focused logs about what the system is
+            doing (far more useful than default Windows logging), and the
+            Splunk Universal Forwarder, a lightweight agent whose only job is
+            to ship those logs to the indexer, over port 9997. For Sysmon I
+            used the popular sysmon-modular configuration by Olaf Hartong
+            instead of writing my own config from scratch, which is standard
+            practice and a great starting point.
+        </p>
+        <p>
+            So the flow is: things happen on the VM, Sysmon writes them down,
+            the forwarder ships them to Splunk on the host, and I search them
+            there.
+        </p>
+
+        <h2>What went wrong</h2>
+        <p>
+            This is exactly the experience I couldn't get from a pre-built lab,
+            so I'm sharing it proudly. One thing worth knowing before I do: my
+            degree is in Security Studies, not computer science. Everything
+            computer-related I've taught myself over the past seven months, so
+            things that might be an obvious detail to someone who studied
+            computing were brand new to me.
+        </p>
+        <p>
+            Problem one is a perfect example. When I created the VM, I didn't
+            even check what type of drives my C and D partitions were. D simply
+            had more free space, so that's where the VM went. :) It turned out
+            D was the HDD, and the disk sat at 100% utilisation, making the
+            whole machine painfully slow. The fix was moving the VM onto the
+            SSD. Lesson learned: virtual machines really, really want fast
+            storage, and now I always check what kind of disk I'm working with
+            first.
+        </p>
+        <p>
+            Problem two was sneakier. Everything looked installed and running,
+            yet Sysmon logs simply weren't arriving in Splunk. The forwarder
+            service was running, the network connection worked, but nothing
+            flowed. The cause turned out to be permissions: the SplunkForwarder
+            service didn't have the rights to read the Sysmon event channel.
+            Setting the service to run as LocalSystem solved it. And that
+            moment, when Sysmon events finally started appearing in Splunk
+            after all that troubleshooting, was genuinely the highlight of the
+            whole project. Everything clicked into place at once.
+        </p>
+        <p>
+            Small practical note: I also bumped the VM's RAM up to 6 GB, which
+            made it noticeably more comfortable to work with.
+        </p>
+
+        <h2>My favourite search</h2>
+        <p>
+            Once logs were flowing, I started learning SPL (Splunk's search
+            language) on my own real data. This is the query I kept coming back
+            to:
+        </p>
+        <p>
+            <code>index=win_lab source="*Sysmon*" EventCode=1 | top limit=10 Image</code>
+        </p>
+        <p>
+            Let me break it down, because every part earns its place:
+        </p>
+        <p>
+            <code>index=win_lab</code> tells Splunk where to look: the index I
+            created for logs from the lab VM.
+        </p>
+        <p>
+            <code>source="*Sysmon*"</code> narrows it down to events coming
+            from Sysmon, ignoring other Windows logs.
+        </p>
+        <p>
+            <code>EventCode=1</code> is Sysmon's event for process creation.
+            Every time any program starts on the VM, this event fires.
+        </p>
+        <p>
+            The pipe <code>|</code> sends those results into the next command,
+            and <code>top limit=10 Image</code> counts which values of the
+            Image field (the full path of the executable that started) appear
+            most often, and shows the top ten.
+        </p>
+        <img src="../images/splunk-top-processes.png" alt="Splunk search results showing the top 10 most frequently started processes on the lab VM">
+        <p>
+            The result is a ranked list of the processes that run most on the
+            machine. And here's why I love it: this one query taught me what
+            <em>normal</em> looks like. I got to know the core Windows
+            processes, svchost.exe running constantly, cmd.exe, WmiPrvSE.exe,
+            the Edge updater doing its thing in the background. That baseline
+            is the foundation of detection work: you can't spot the abnormal
+            until you genuinely know the normal.
+        </p>
+
+        <h2>The dashboard</h2>
+        <p>
+            To pull it together I built a small dashboard with panels for
+            process creation counts, network connections, and logon events,
+            including a breakdown of logon-related event codes (4624 for
+            successful logons, 4625 for failed ones, and so on). The panel
+            titles are in Serbian, my native language, but the idea translates
+            easily: process count, network connections, successful and failed
+            logons.
+        </p>
+        <img src="../images/soc-lab-dashboard.png" alt="SOC lab dashboard in Splunk with panels for process count, network connections, successful and failed logons">
+        <p>
+            One detail I'm a little proud of: I deliberately failed a login on
+            the VM, just so the dashboard would have a failed logon to show. If
+            you're going to monitor for something, first make sure you'd
+            actually see it.
+        </p>
+
+        <h2>What I learned, and what's next</h2>
+        <p>
+            The biggest takeaway isn't any single command. It's that I now
+            understand the internal structure: how a log travels from the
+            moment something happens on an endpoint to the moment it appears in
+            a search result, and where along that path things can break. That
+            understanding simply doesn't come from analysing someone else's
+            ready-made environment.
+        </p>
+        <p>
+            Next up in the lab: phishing email analysis. Untangling phishing
+            campaigns is the part of SOC work I enjoy most, so I want to bring
+            that into my own environment and see it from the inside. That will
+            be its own post.
+        </p>
+        <p>
+            If you're learning SOC fundamentals and have a spare machine, I
+            can't recommend this enough. It will frustrate you, at least twice,
+            and that's exactly the point.
+        </p>
+
+        <a class="back-link" href="../blog.html">&larr; back to all posts</a>
+    </article>
+
+    <footer>
+        <p>&copy; 2026 Andrea Stojadinov // built &amp; maintained by me</p>
+    </footer>
+
+</body>
+</html>
