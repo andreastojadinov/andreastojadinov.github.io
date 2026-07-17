@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <title>My first solo phishing triage in the home lab | Andrea Stojadinov</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#skills">Skills</a>
+        <a href="../blog.html" class="active">Blog</a>
+        <a href="../index.html#contact">Contact</a>
+    </nav>
+
+    <article>
+        <h1>My first solo phishing triage in the home lab</h1>
+        <p class="post-date">2026-07</p>
+
+        <p>
+            After building my home SOC lab, phishing analysis was the next thing
+            I wanted to try, because untangling phishing is something I really
+            enjoy in SOC work. I had already done triage through TryHackMe
+            rooms, but this was my first time doing it solo, in my own
+            environment, from start to finish: taking real malicious samples,
+            investigating them the way an L1 analyst would, and writing up a
+            verdict with recommended actions.
+        </p>
+
+        <h2>The goal</h2>
+        <p>
+            I wanted to analyse real phishing content, not toy examples. I used
+            two sources: live malicious URLs from PhishTank, and full .eml files
+            from TryHackMe rooms I had not solved yet, so the analysis would be
+            genuine and not something I already knew the answer to. I looked for
+            complete .eml files elsewhere too, but I mostly found only extracted
+            indicators rather than whole emails, so the TryHackMe rooms turned
+            out to be the best source of real headers to practise on.
+        </p>
+
+        <h2>Part 1: URL triage from PhishTank</h2>
+        <p>
+            My workflow for each malicious URL was simple and repeatable:
+        </p>
+        <p>
+            First, check the URL on VirusTotal to see how many engines flag it
+            and how. Then look up the hosting IP on AbuseIPDB and Whois, for
+            reputation and origin. Finally, record everything as defanged
+            indicators and write a short SOC-style report with a verdict and
+            recommended actions.
+        </p>
+        <p>
+            A quick note on defanging: I wrote every indicator as hxxps and
+            wrapped the dots in brackets, like <code>domain[.]com</code>. It is
+            a small habit that stops anyone, including future me, from
+            accidentally clicking a live malicious link pasted into notes.
+        </p>
+        <p>
+            Here is one example: a domain impersonating Netflix. VirusTotal
+            flagged the URL on 16 of 92 engines, most of them labelling it
+            phishing. The hosting IP had been reported dozens of times for spam,
+            phishing and brute force. Verdict: malicious. My recommended actions
+            were to block the indicators at the web proxy, add them to the
+            threat intel feed, warn users not to interact, and escalate to
+            incident response if anyone had already clicked.
+        </p>
+        <img src="../images/phishing-report-netflix.png" alt="Structured phishing analysis report for a Netflix-impersonating domain, with defanged indicators, VirusTotal results and a malicious verdict">
+
+        <h2>The moment that taught me the most</h2>
+        <p>
+            Then I hit a more interesting case: a domain impersonating a medical
+            diagnostics service. The URL was clearly phishing, flagged by 14 of
+            92 engines. But the hosting IP had been reported only once, and
+            otherwise had a clean reputation.
+        </p>
+        <p>
+            That small detail taught me something I had not really internalised
+            before: a legitimate IP can be abused. It might be a shared host, or
+            a compromised legitimate server. So in my report I deliberately
+            recommended NOT blanket-blocking the IP without further
+            investigation, and instead blocking the URL while checking whether
+            that same IP also hosted legitimate domains. Blocking an IP that
+            also serves innocent sites can cause real collateral damage.
+        </p>
+        <p>
+            That nuance, the difference between a malicious IP and a legitimate
+            IP used once for something malicious, was the most valuable lesson
+            of the whole exercise. It is exactly the kind of judgment call that
+            separates reading a tool's output from actually analysing.
+        </p>
+        <img src="../images/phishing-report-ip-reputation.png" alt="Phishing analysis report for a medical diagnostics impersonation, showing a hosting IP with only one abuse report and a recommendation not to blanket-block it">
+
+        <h2>Part 2: going deeper with a full .eml</h2>
+        <p>
+            URLs are only half the story. To practise the other half, I
+            downloaded a complete .eml file from a TryHackMe room and analysed
+            the full headers and body.
+        </p>
+        <p>
+            This is where email authentication comes in. I checked SPF, DKIM,
+            DMARC and ARC, and every one of them came back as none or failed.
+            That is a strong signal on its own, because a genuine sender from a
+            real company almost always passes these checks. On top of that,
+            several classic phishing tells lined up:
+        </p>
+        <p>
+            The email had been sent through a known free anonymous mailer
+            service, visible in the headers, which is a common way to spoof a
+            sender. The Reply-To used typosquatting, a zero instead of the
+            letter o in the name, so it looks legitimate at a glance. The
+            subject screamed urgency, marked high priority and demanding an
+            account update, a textbook emotional-manipulation tactic to make the
+            target act before thinking. And it carried an HTML attachment that
+            was a credential-harvesting page.
+        </p>
+        <img src="../images/phishing-report-eml-headers.png" alt="Phishing analysis report from a full .eml file, showing failed SPF, DKIM, DMARC and ARC, a typosquatted Reply-To, an urgent subject and a malicious HTML attachment">
+
+        <h2>My favourite detection moment</h2>
+        <p>
+            When I tried to decode the attachment to inspect it, my antivirus
+            stepped in and revoked the action, because it had already recognised
+            malicious patterns in the HTML during decoding. I did not even need
+            the decoded content to reach a verdict: the antivirus reaction was
+            itself the answer. It was a neat reminder that detection happens in
+            layers, and sometimes a tool catches something before you finish
+            your own analysis.
+        </p>
+
+        <h2>How I wrote it up</h2>
+        <p>
+            For each sample I produced a small structured report: the
+            indicators, defanged, with notes, the VirusTotal results, and a SOC
+            analyst verdict with a rationale and recommended actions such as
+            block, add to blocklist, notify users, and escalate if clicked.
+            Writing the verdict and the actions, not just "this is bad," is the
+            part that felt most like real SOC work. An analyst's job is not only
+            to decide, but to state clearly what should happen next.
+        </p>
+
+        <h2>Mapping to MITRE ATT&amp;CK</h2>
+        <p>
+            All of this sits under Initial Access, technique Phishing (T1566),
+            with the malicious link and the malicious attachment matching its
+            two sub-techniques. Connecting what I was seeing back to the
+            framework, the subject of my previous post, made the whole exercise
+            feel joined-up.
+        </p>
+
+        <h2>What's next</h2>
+        <p>
+            I want to bring this into Splunk next, detecting phishing-related
+            activity from logs rather than analysing samples by hand. That will
+            be another post.
+        </p>
+        <p>
+            Phishing analysis rewarded patience and curiosity more than anything
+            else. The most useful skill was not any single tool, it was learning
+            to question the easy answer: is this IP really malicious, or was it
+            just used once by someone malicious? That question, I am learning,
+            is the heart of triage.
+        </p>
+
+        <a class="back-link" href="../blog.html">&larr; back to all posts</a>
+    </article>
+
+    <footer>
+        <p>&copy; 2026 Andrea Stojadinov // built &amp; maintained by me</p>
+    </footer>
+
+</body>
+</html>
